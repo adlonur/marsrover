@@ -1,6 +1,0 @@
-GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-MarsRover,com.hepsiburada.util,MethodUtil,0,255,7,27,0,58,7,20,0,10
-MarsRover,com.hepsiburada.exception,WrongCommand,0,4,0,0,0,2,0,1,0,1
-MarsRover,com.hepsiburada.exception,WrongStartPositionException,0,4,0,0,0,2,0,1,0,1
-MarsRover,com.hepsiburada.exception,PositionException,0,4,0,0,0,2,0,1,0,1
-MarsRover,com.hepsiburada.constant,Directions,0,66,0,0,0,14,0,1,0,1
