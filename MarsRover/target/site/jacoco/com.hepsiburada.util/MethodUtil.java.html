@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MethodUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MarsRover</a> &gt; <a href="index.source.html" class="el_package">com.hepsiburada.util</a> &gt; <span class="el_source">MethodUtil.java</span></div><h1>MethodUtil.java</h1><pre class="source lang-java linenums">package com.hepsiburada.util;
+
+import java.util.Map;
+import java.util.Scanner;
+import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import com.hepsiburada.constant.Constant;
+import com.hepsiburada.constant.Directions;
+import com.hepsiburada.constant.ErrorMessage;
+import com.hepsiburada.exception.PositionException;
+import com.hepsiburada.exception.WrongCommand;
+import com.hepsiburada.exception.WrongStartPositionException;
+import com.hepsiburada.model.Position;
+import com.hepsiburada.model.Space;
+
+public class MethodUtil {
+
+<span class="fc" id="L19">	private static final Logger LOGGER = Logger.getLogger(MethodUtil.class.getName());</span>
+
+	private MethodUtil() {
+
+	}
+
+	/**
+	 * @param scanner
+	 * @return
+	 * @throws Exception
+	 */
+	public static Pair&lt;Position, String&gt; getData(Scanner scanner) throws Exception {
+
+<span class="fc" id="L32">		Position position = getPositionValue(scanner);</span>
+
+<span class="fc" id="L34">		String command = getCommand(scanner);</span>
+
+<span class="fc" id="L36">		return Pair.of(position, command);</span>
+	}
+
+	/**
+	 * @param scanner
+	 * @return
+	 */
+	public static Space getSpaceValue(Scanner scanner) {
+
+<span class="fc" id="L45">		LOGGER.info(&quot;Please Enter Space Value&quot;);</span>
+
+<span class="fc" id="L47">		Space space = new Space();</span>
+
+<span class="fc" id="L49">		String platea = scanner.nextLine();</span>
+
+<span class="fc" id="L51">		String xValue = StringUtils.substringBefore(platea, Constant.SEPARATOR);</span>
+
+<span class="fc" id="L53">		String yValue = StringUtils.substringAfter(platea, Constant.SEPARATOR);</span>
+
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if (!StringUtils.isBlank(xValue)) {</span>
+<span class="fc" id="L56">			space.setX(Integer.parseInt(xValue));</span>
+		}
+
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		if (!StringUtils.isBlank(yValue)) {</span>
+<span class="fc" id="L60">			space.setY(Integer.parseInt(yValue));</span>
+		}
+
+<span class="fc" id="L63">		return space;</span>
+
+	}
+
+	/**
+	 * @param space
+	 * @param position
+	 * @param command
+	 * @return
+	 * @throws PositionException 
+	 */
+	public static Position calcualatePosition(Space space, Position position, String command) throws PositionException {
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (int i = 0; i &lt; command.trim().length(); i++) {</span>
+
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (Constant.MOVE.equals(String.valueOf(command.charAt(i)))) {</span>
+
+<span class="fc" id="L80">				position = positionUpdate(position);</span>
+
+<span class="fc" id="L82">				checkInSpace(position, space);</span>
+
+<span class="fc" id="L84">			} else {</span>
+
+<span class="fc" id="L86">				position.setHead(findNewPosition(position, String.valueOf(command.charAt(i))));</span>
+
+			}
+
+		}
+
+<span class="fc" id="L92">		return position;</span>
+	}
+
+	/**
+	 * @param position
+	 * @return
+	 */
+	public static Position positionUpdate(Position position) {
+
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		if (Constant.NORTH.equals(position.getHead())) {</span>
+
+<span class="fc" id="L103">			position.setY(position.getY() + Constant.MOVE_SIZE);</span>
+
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		} else if (Constant.SOUTH.equals(position.getHead())) {</span>
+
+<span class="fc" id="L107">			position.setY(position.getY() - Constant.MOVE_SIZE);</span>
+
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		} else if (Constant.WEST.equals(position.getHead())) {</span>
+
+<span class="fc" id="L111">			position.setX(position.getX() - Constant.MOVE_SIZE);</span>
+
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">		} else if (Constant.EAST.equals(position.getHead())) {</span>
+
+<span class="fc" id="L115">			position.setX(position.getX() + Constant.MOVE_SIZE);</span>
+
+		}
+
+<span class="fc" id="L119">		return position;</span>
+
+	}
+
+	/**
+	 * @param scanner
+	 * @return
+	 * @throws WrongCommand
+	 */
+	private static String getCommand(Scanner scanner) throws WrongCommand {
+
+<span class="fc" id="L130">		LOGGER.info(&quot;Please Enter Command : &quot;);</span>
+
+<span class="fc" id="L132">		String command = scanner.nextLine();</span>
+
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		if (!checkCommand(command)) {</span>
+<span class="fc" id="L135">			throw new WrongCommand(ErrorMessage.WRONG_COMMAND_MESSAGE);</span>
+		}
+
+<span class="fc" id="L138">		return command;</span>
+	}
+
+	/**
+	 * @param command
+	 * @return
+	 */
+	private static boolean checkCommand(String command) {
+
+<span class="pc bpc" id="L147" title="1 of 4 branches missed.">		return !StringUtils.isBlank(command) &amp;&amp; StringUtils.containsOnly(command, Constant.COMMANDS);</span>
+
+	}
+
+	/**
+	 * @param scanner
+	 * @return
+	 * @throws WrongStartPositionException
+	 */
+	private static Position getPositionValue(Scanner scanner) throws WrongStartPositionException {
+
+<span class="fc" id="L158">		LOGGER.info(&quot;Please Enter Start Position Value&quot;);</span>
+
+<span class="fc" id="L160">		String startPosition = null;</span>
+
+<span class="fc" id="L162">		Position position = new Position();</span>
+
+		try {
+<span class="fc" id="L165">			startPosition = scanner.nextLine();</span>
+<span class="fc" id="L166">		} catch (Exception e) {</span>
+<span class="fc" id="L167">			throw new WrongStartPositionException(ErrorMessage.POSITION_NULL);</span>
+		}
+
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">		if (!StringUtils.isBlank(startPosition)) {</span>
+
+<span class="fc" id="L172">			String[] startPositionArray = startPosition.split(Constant.SEPARATOR);</span>
+
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			if (startPositionArray.length == 3) {</span>
+
+<span class="fc" id="L176">				position.setX(Integer.parseInt(startPositionArray[0]));</span>
+
+<span class="fc" id="L178">				position.setY(Integer.parseInt(startPositionArray[1]));</span>
+
+<span class="fc" id="L180">				position.setHead(startPositionArray[2]);</span>
+
+<span class="fc" id="L182">			} else {</span>
+<span class="fc" id="L183">				throw new WrongStartPositionException(startPosition);</span>
+			}
+
+		}
+
+<span class="fc" id="L188">		return position;</span>
+	}
+
+	/**
+	 * @param position
+	 * @param command
+	 * @return
+	 */
+	private static String findNewPosition(Position position, String command) {
+
+<span class="fc" id="L198">		Map&lt;String, String&gt; coordinat = Directions.getCoordinat();</span>
+
+<span class="fc" id="L200">		return coordinat.get(position.getHead() + command);</span>
+	}
+
+	/**
+	 * @param position
+	 * @param space
+	 * @throws PositionException 
+	 */
+	private static void checkInSpace(Position position, Space space) throws PositionException {
+
+<span class="pc bpc" id="L210" title="1 of 4 branches missed.">		if (position.getX() &gt; space.getX() || position.getY() &gt; space.getY()) {</span>
+
+<span class="fc" id="L212">			throw new PositionException(ErrorMessage.BIG_POSITION);</span>
+		}
+
+<span class="pc bpc" id="L215" title="1 of 4 branches missed.">		if (position.getX() &lt; 0 || position.getY() &lt; 0) {</span>
+
+<span class="fc" id="L217">			throw new PositionException(ErrorMessage.BIG_POSITION);</span>
+		}
+
+<span class="fc" id="L220">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
